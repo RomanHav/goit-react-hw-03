@@ -12,19 +12,27 @@ export default function ContactForm({ handleSubmit }) {
       .max(50, "Too Long!")
       .required("Required"),
     number: Yup.string()
-      .min(3, "Too short!")
-      .max(50, "Too long!")
+      .min(9, "Too short!")
+      .max(14, "Too long!")
+      .matches(/^[0-9]{3}-[0-9]{2}-[0-9]{2}$/, "Invalid number format")
       .required("Required"),
   });
 
+  const initialValues = {
+    id: "",
+    name: "",
+    number: "",
+  };
+
+  const onSubmit = (values, actions) => {
+    const contactWithId = { ...values, id: nanoid() };
+    handleSubmit(contactWithId, actions);
+  };
+
   return (
     <Formik
-      initialValues={{
-        id: nanoid(),
-        name: "",
-        number: "",
-      }}
-      onSubmit={handleSubmit}
+      initialValues={initialValues}
+      onSubmit={onSubmit}
       validationSchema={FeedbackSchema}
     >
       <Form className={css.form}>
@@ -37,6 +45,7 @@ export default function ContactForm({ handleSubmit }) {
             name="name"
             id={`${id}-name`}
             className={css.formInput}
+            placeholder="Alex"
           />
           <ErrorMessage className={css.error} name="name" component="span" />
         </div>
@@ -44,10 +53,10 @@ export default function ContactForm({ handleSubmit }) {
           <label htmlFor={`${id}-number`}>Number</label>
           <Field
             type="tel"
-            pattern="[0-9]{3}-[0-9]{2}-[0-9]{2}"
             name="number"
             id={`${id}-number`}
             className={css.formInput}
+            placeholder="432-11-55"
           />
           <ErrorMessage className={css.error} name="number" component="span" />
         </div>
